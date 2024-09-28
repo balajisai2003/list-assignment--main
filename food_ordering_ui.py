@@ -45,11 +45,11 @@ def make_order(menu_choice, order):
    if user_selection:
       item_code, quantity = user_selection
       item_name, item_price, stock = functions.get_item_information(item_code)
-            if quantity <= stock:
-                order.append((item_name, item_price, quantity))
-                print(f"Added {quantity} of {item_name} to your order.")
-            else:
-                print(f"Sorry, we only have {stock} of {item_name}.")
+      if quantity <= stock:
+        order.append((item_name, item_price, quantity))
+        print(f"Added {quantity} of {item_name} to your order.")
+      else:
+        print(f"Sorry, we only have {stock} of {item_name}.")
       continue_order = input("Would you like to add more items? (Y/N): ").upper()
    if continue_order == 'N':
       break
