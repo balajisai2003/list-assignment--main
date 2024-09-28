@@ -10,6 +10,7 @@ def show_main_menu():
     print('C to change an order')
     print('X for close orders and print the check')
     print('P for to print the check')
+    print('M for manager options')
     print('Q for quit')
     user_menu_choice = input('Your choice: '.upper())
     if user_menu_choice in 'Q':
@@ -32,6 +33,8 @@ def show_main_menu():
           print("No Items, Please order first")
       else:
         functions.print_check(order)
+    elif user_menu_choice == 'M':
+            functions.update_menu()
     else:
       print("Invalid input. Please try again.")
  
@@ -41,9 +44,12 @@ def make_order(menu_choice, order):
    user_selection = functions.get_item_number()
    if user_selection:
       item_code, quantity = user_selection
-      item_name, item_price = functions.get_item_information(item_code)
-      order.append((item_name, item_price, int(quantity)))
-      print(f"Added {quantity} of {item_name} to your order.")
+      item_name, item_price, stock = functions.get_item_information(item_code)
+            if quantity <= stock:
+                order.append((item_name, item_price, quantity))
+                print(f"Added {quantity} of {item_name} to your order.")
+            else:
+                print(f"Sorry, we only have {stock} of {item_name}.")
       continue_order = input("Would you like to add more items? (Y/N): ").upper()
    if continue_order == 'N':
       break
