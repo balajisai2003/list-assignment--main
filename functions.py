@@ -59,3 +59,46 @@ def display_current_order(order):
     print("\nCurrent Order:")
     for idx, (item_name, item_price, quantity) in enumerate(order, start=1):
         print(f"{idx}. {item_name} (x{quantity}) - ${item_price * quantity:.2f}")
+
+def update_menu():
+    """Manager function to update the menu (add, remove, update items)."""
+    while True:
+        print("\nManager Menu Options:")
+        print("1. Add a new item")
+        print("2. Remove an item")
+        print("3. Update item price or stock")
+        print("4. Go back")
+        
+        choice = input("Enter your choice (1-4): ")
+        
+        if choice == "1":
+            code = input("Enter item code: ").upper()
+            name = input("Enter item name: ")
+            price = int(input("Enter item price: "))
+            stock = int(input("Enter item stock (for drinks, enter 'inf'): "))
+            stock = float('inf') if stock == 'inf' else stock
+            data.menu_items.append({'code': code, 'name': name, 'price': price, 'stock': stock})
+            print(f"Item {name} added successfully.")
+            
+        elif choice == "2":
+            code = input("Enter item code to remove: ").upper()
+            data.menu_items = [item for item in data.menu_items if item['code'] != code]
+            print(f"Item with code {code} removed successfully.")
+            
+        elif choice == "3":
+            code = input("Enter item code to update: ").upper()
+            for item in data.menu_items:
+                if item['code'] == code:
+                    new_price = int(input(f"Enter new price for {item['name']} (current: ${item['price']}): "))
+                    new_stock = input(f"Enter new stock for {item['name']} (current: {item['stock']}): ")
+                    new_stock = float('inf') if new_stock == 'inf' else int(new_stock)
+                    item['price'], item['stock'] = new_price, new_stock
+                    print(f"Item {item['name']} updated successfully.")
+                    break
+            else:
+                print("Item code not found.")
+                
+        elif choice == "4":
+            break
+        else:
+            print("Invalid input. Try again.")
