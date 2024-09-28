@@ -1,0 +1,8 @@
+The assignment simulates the order taking process at a diner. The menu items (found in data.py)
+has item types, item description and item price. 
+The application will display a menu (run food_ordering_ui to view) and the user can add items by selecting one of D A S E T.
+The user can change an order by choosing C
+The user can print the check and reset the ordered items list.
+Choosing Q will quit the application.
+
+Import this repository into your github repository.  Then work on developing the script.  Include at least 3 commits during the development. Submit your github repository URL by the due date. 
