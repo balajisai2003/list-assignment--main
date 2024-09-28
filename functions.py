@@ -3,35 +3,37 @@
 #Use this  function that will return the item name and price for a given item code
 # for example, find_menu_item('D2') should return Lemonade, and integer 3 as the result
 import data
+
 def get_item_information(item_code):
   """ this  function that will return the item name and price for a given item code.
     For example, find_menu_item('D2') should return Lemonade, and integer 3 as the result """
-  print(item_code)
   for item in data.menu_items:
-    item_number, item_name, item_price = item.split(' ')
-    if item_number == item_code:
-      return item_name.encode("ascii", "ignore").decode(), int(item_price)
-
+    if item['code'] == item_code:
+      return item['name'], item['price'], item['stock']
+  print('Item not found')
+  return None, None, None
 def display_items():
-  print('Drinks', [d.replace('\u200b','') for d in data.menu_items if d[0] == 'D'])
-  print('Appetizers', [a.replace('\u200b','') for a in data.menu_items if a[0] == 'A'])
-  print("Salads:", [s.replace('\u200b','') for s in data.menu_items if s[0] == 'S'])
-  print("Entrees:", [e.replace('\u200b','') for e in data.menu_items if e[0] == 'E'])
-  print("Desserts:", [t.replace('\u200b','') for t in data.menu_items if t[0] == 'T'])
+  print('Drinks:', [(item['name'], item['code']) for item in data.menu_items if item['code'] in data.drink_items])
+  print('Appetizers:', [(item['name'], item['code']) for item in data.menu_items if item['code'] in data.appetizer_items])
+  print('Salads:', [(item['name'], item['code']) for item in data.menu_items if item['code'] in data.salad_items])
+  print('Entrees:', [(item['name'], item['code']) for item in data.menu_items if item['code'] in data.entree_items])
+  print('Desserts:', [(item['name'], item['code']) for item in data.menu_items if item['code'] in data.dessert_items])
 
 def get_item_number():
   while True:
    display_items()
-   order_item = input('Enter dish number and quantity: ')
-   parts = order_item.split()
-   if len(parts) == 2:  # Check if there are exactly two parts
-      item_code, quantity = parts
-      if item_code in data.all_items and quantity.isdigit():  # Check if item code is valid and quantity is a digit
-         return item_code, int(quantity)  # Return the item code and quantity as integer
-      else:
-         print("Invalid dish number or quantity. Please try again.")
-   else:
-     print("Please enter both dish number and quantity, separated by a space.")
+   order_item = input('Enter dish number and quantity: ').split()
+   if len(order_item) == 2:
+    item_code, quantity = order_item
+    item_name, item_price, stock = get_item_information(item_code)
+    if item_name and int(quantity) <= stock:
+      return item_code, int(quantity)
+    elif item_name:
+      print(f"Only {stock} {item_name}(s) left. Please adjust your quantity.")
+    else:
+      print("Invalid item code. Try again.")
+  else:
+    print("Invalid input. Enter both dish number and quantity.")
 
 def print_check(order):
     print("\nYour Order Summary:")
@@ -72,33 +74,47 @@ def update_menu():
         choice = input("Enter your choice (1-4): ")
         
         if choice == "1":
-            code = input("Enter item code: ").upper()
-            name = input("Enter item name: ")
+          code = input("Enter item code: ").upper()
+          name = input("Enter item name: ")
+          item_exists = False
+          for item in data.menu_items:
+            if item['code'] == code or item['name'] == name:
+              item_exists = True
+              break
+          if item_exists:
+            print(f"Item with code '{code}' or name '{name}' already exists.")
+            continue
+          else:
+            # If item does not exist, get price and stock and add it to the menu
             price = int(input("Enter item price: "))
-            stock = int(input("Enter item stock (for drinks, enter 'inf'): "))
-            stock = float('inf') if stock == 'inf' else stock
+            stock = input("Enter item stock (for drinks, enter 'inf'): ")
+            if stock == 'inf':
+              stock = float('inf')  # Unlimited stock for drinks
+            else:
+              stock = int(stock)
+          
             data.menu_items.append({'code': code, 'name': name, 'price': price, 'stock': stock})
             print(f"Item {name} added successfully.")
             
         elif choice == "2":
-            code = input("Enter item code to remove: ").upper()
-            data.menu_items = [item for item in data.menu_items if item['code'] != code]
-            print(f"Item with code {code} removed successfully.")
+          code = input("Enter item code to remove: ").upper()
+          data.menu_items = [item for item in data.menu_items if item['code'] != code]
+          print(f"Item with code {code} removed successfully.")
             
         elif choice == "3":
-            code = input("Enter item code to update: ").upper()
-            for item in data.menu_items:
-                if item['code'] == code:
-                    new_price = int(input(f"Enter new price for {item['name']} (current: ${item['price']}): "))
-                    new_stock = input(f"Enter new stock for {item['name']} (current: {item['stock']}): ")
-                    new_stock = float('inf') if new_stock == 'inf' else int(new_stock)
-                    item['price'], item['stock'] = new_price, new_stock
-                    print(f"Item {item['name']} updated successfully.")
-                    break
-            else:
-                print("Item code not found.")
+          code = input("Enter item code to update: ").upper()
+          for item in data.menu_items:
+            if item['code'] == code:
+              new_price = int(input(f"Enter new price for {item['name']} (current: ${item['price']}): "))
+              new_stock = input(f"Enter new stock for {item['name']} (current: {item['stock']}): ")
+              new_stock = float('inf') if new_stock == 'inf' else int(new_stock)
+              item['price'], item['stock'] = new_price, new_stock
+              print(f"Item {item['name']} updated successfully.")
+              break
+            
+          print("Item code not found.")
                 
         elif choice == "4":
-            break
+          break
         else:
-            print("Invalid input. Try again.")
+          print("Invalid input. Try again.")
